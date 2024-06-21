@@ -6,12 +6,12 @@ export const config = {
         port: parseInt( process.env.APP_PORT as string )
     },
     db: {
-        type: process.env.GENFOL_TYPE,
-        host: process.env.GENFOL_DBHOST,
-        username: process.env.GENFOL_USERDB,
-        password: process.env.GENFOL_PASSDB,
-        port: parseInt(process.env.GENFOL_DBPORT as string),
-        database: process.env.GENFOL_DB,
+        type: process.env.FALP_TYPE,
+        host: process.env.FALP_DBHOST,
+        username: process.env.FALP_USERDB,
+        password: process.env.FALP_PASSDB,
+        port: parseInt(process.env.FALP_DBPORT as string),
+        database: process.env.FALP_DB,
         synchronize: true,
         logging: true,
         entities: []
@@ -20,6 +20,6 @@ export const config = {
 
     },
     saglog:{
-        app: process.env.SAGLOG_APP
+        app: process.env.FALPLOG_APP
     }
 }
