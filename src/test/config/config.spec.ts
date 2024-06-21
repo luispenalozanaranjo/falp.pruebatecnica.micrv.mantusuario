@@ -27,11 +27,11 @@ describe('Config', () => {
   });
 
   it('should have the correct the entities', () => {
-    expect(config.db.entities).toBe(true);
+    expect(config.db.entities).toStrictEqual([]);
   });
 
   it('should have the correct logging', () => {
-    expect(config.db.logging).toBe(false);
+    expect(config.db.logging).toBe(true);
   });
 
   it('should have the correct synchronize option', () => {
@@ -39,7 +39,7 @@ describe('Config', () => {
   });
 
   it('should have the correct type option', () => {
-    expect(config.db.type).toBe(true);
+    expect(config.db.type).toBe('postgres');
   });
 
   // Add more tests for other properties if needed

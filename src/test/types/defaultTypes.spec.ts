@@ -12,7 +12,7 @@ describe('responseType', () => {
 
     expect(response.Respuesta).toEqual('true');
     expect(response.Detalle).toEqual('Details');
-    expect(response.Registro).toEqual('Details');
+    expect(response.Registro).toEqual({});
     expect(response['codigo-error']).toEqual(0);
   });
 
@@ -25,7 +25,7 @@ describe('responseType', () => {
 
     expect(response.Respuesta).toEqual('true');
     expect(response.Detalle).toEqual('Details');
-    expect(response.Registro).toEqual('Details');
+    expect(response.Registro).toEqual({});
     expect(response['codigo-error']).toBeUndefined();
   });
 });

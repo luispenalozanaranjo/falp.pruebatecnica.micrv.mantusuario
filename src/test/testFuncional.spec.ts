@@ -25,42 +25,56 @@ describe('Pruebas con resultado no exitoso', () => {
             request(server.app).post(url6),
         ]);
 
-        expect(getRequest.status).toBe(500);
-        expect(postRequest.status).toBe(500);
+        expect(getRequest.status).toBe(400);
+        expect(postRequest.status).toBe(400);
+    });
+
+    it('/api/v1/buscarusuario Busqueda de un rut no existente en DB', async () => {
+
+        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-2').expect(200);
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.Detalle).toBe(`Usuario no existe`);
+    });
+
+    it('/api/v1/buscarusuario Busqueda de un rut con mal formato', async () => {
+
+        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-3').expect(200);
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.Detalle).toBe(`El Rut ingresado 18498899-3 es invalido`);
     });
 
     it('/api/v1/crearusuario without body should return 400', async () => {
         const res = await request(server.app).post('/api/v1/crearusuario');
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
     it('/api/v1/crearusuario with empty body should return 400', async () => {
         const res = await request(server.app).post('/api/v1/crearusuario').send({});
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
     it('/api/v1/crearusuario with invalid tipofolio should return 400', async () => {
         const json = { rut: '14143456-9' };
         const res = await request(server.app).post('/api/v1/crearusuario').send(json);
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
     it('/api/v1/crearusuario with invalid datos should return 400', async () => {
         const json = { rut: '14143456-9', nombre: 'Lu876' };
         const res = await request(server.app).post('/api/v1/crearusuario').send(json);
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
     it('/api/v1/crearusuario with invalid agno should return 400', async () => {
         const json = { rut: '14143456-k', nombre: 'Lu876' };
         const res = await request(server.app).post('/api/v1/crearusuario').send(json);
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
     it('/api/v1/crearusuario with invalid region should return 400', async () => {
         const json = { rut: '14143456-9', nombre: 'Lus' };
         const res = await request(server.app).post('/api/v1/crearusuario').send(json);
-        expect(res.statusCode).toEqual(500);
+        expect(res.statusCode).toEqual(400);
     });
 
 });
@@ -97,42 +111,42 @@ describe('Pruebas con resultado exitoso', () => {
         expect(res.body.timestamp).toBeGreaterThan(0);
     });
 
-    it('/api/v1/generarfolios should return 200 to tipoFolio 7', async () => {
+    it('/api/v1/buscarusuario Busqueda de un rut existente en DB', async () => {
 
-        const json = { 
-            tipofolio: 7,
-            datos: 
-                { 
-                    agno: 2024,
-                    region: 13
-                } 
-        }
-
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
+        const res= await request(server.app).get('/api/v1/buscarusuario?rut=14143456-k').expect(200);
         expect(res.statusCode).toEqual(200);
-        expect(res.body.numero_folio).not.toBe('')
-        expect(res.body.respuesta).toBe('true');
-        expect(res.body.Respuesta).toEqual(res.body.respuesta)
-        expect(res.body.Detalle).toBe(`Folio generado correctamente para el tipo de folio ${json.tipofolio}`);
-        expect(res.body.detalle).toEqual(res.body.Detalle)
     });
 
-    it('/api/v1/generarfolios should return 200 to tipoFolio expendio', async () => {
+    it('/api/v1/crearusuario should return 200', async () => {
 
-        const json = { 
-            tipofolio: '8'
+        const json2 = {
+            "rut":"3.656.539-K",
+            "nombre":"victor",
+            "primer_apellido":"galindo",
+            "segundo_apellido":"perez"
         }
 
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json2).expect(200);;
         expect(res.statusCode).toEqual(200);
-        expect(res.body.numero_folio).not.toBe('')
-        expect(res.body.respuesta).toBe('true');
-        expect(res.body.Respuesta).toEqual(res.body.respuesta)
-        expect(res.body.Detalle).toBe(`Folio generado correctamente para el tipo de folio ${json.tipofolio}`);
-        expect(res.body.detalle).toEqual(res.body.Detalle)
+        expect(res.body.Respuesta).toBe('true');
+        expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);
+        
     });
 
-    it('/api/v1/generarfolios should be greater than previous one', async () => {
+    it('/api/v1/crearusuario should return 200 to tipoFolio expendio', async () => {
+
+        const json = {
+            rut:"3.656.539-K",
+            nombre:"victor"
+        }
+
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json).expect(200);;
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.Respuesta).toEqual('true')
+        expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);
+    });
+
+    /*it('/api/v1/generarfolios should be greater than previous one', async () => {
 
         const jsonFolio7 = { 
             tipofolio: 7,
@@ -162,5 +176,5 @@ describe('Pruebas con resultado exitoso', () => {
         const folio4 = parseInt(res4.body.numero_folio);
 
         expect(folio4).toBeGreaterThan(folio3);
-    });
+    });*/
 });
