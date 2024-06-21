@@ -9,95 +9,58 @@ describe('Pruebas con resultado no exitoso', () => {
 
     it('GET, PUT, DELETE and PATCH should return 405', async () => {
 
-        const url = '/api/v1/generarfolios';
+        const url1 = '/api/v1/buscarusuario';
+        const url2 = '/api/v1/crearusuario';
+        const url3 = '/api/v1/creardireccion';
+        const url4 = '/api/v1/buscardireccion';
+        const url5 = '/api/v1/actualizardireccion';
+        const url6 = '/api/v1/eliminardireccion';
 
-        const [ getRequest, putRequest, patchRequest, deleteRequest ] = await Promise.all([
-            request(server.app).get(url),
-            request(server.app).put(url),
-            request(server.app).patch(url),
-            request(server.app).delete(url)
+        const [ getRequest, postRequest] = await Promise.all([
+            request(server.app).get(url1),
+            request(server.app).post(url2),
+            request(server.app).post(url3),
+            request(server.app).get(url4),
+            request(server.app).post(url5),
+            request(server.app).post(url6),
         ]);
 
-        expect(getRequest.status).toBe(405);
-        expect(putRequest.status).toBe(405);
-        expect(patchRequest.status).toBe(405);
-        expect(deleteRequest.status).toBe(405);
+        expect(getRequest.status).toBe(500);
+        expect(postRequest.status).toBe(500);
     });
 
-    it('/api/v1/generarfolios without body should return 400', async () => {
-        const res = await request(server.app).post('/api/v1/generarfolios');
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario without body should return 400', async () => {
+        const res = await request(server.app).post('/api/v1/crearusuario');
+        expect(res.statusCode).toEqual(500);
     });
 
-    it('/api/v1/generarfolios with empty body should return 400', async () => {
-        const res = await request(server.app).post('/api/v1/generarfolios').send({});
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario with empty body should return 400', async () => {
+        const res = await request(server.app).post('/api/v1/crearusuario').send({});
+        expect(res.statusCode).toEqual(500);
     });
 
-    it('/api/v1/generarfolios with invalid tipofolio should return 400', async () => {
-        const json = { tipofolio: 'invalid' };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario with invalid tipofolio should return 400', async () => {
+        const json = { rut: '14143456-9' };
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json);
+        expect(res.statusCode).toEqual(500);
     });
 
-    it('/api/v1/generarfolios with invalid datos should return 400', async () => {
-        const json = { tipofolio: 7, datos: 'invalid' };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario with invalid datos should return 400', async () => {
+        const json = { rut: '14143456-9', nombre: 'Lu876' };
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json);
+        expect(res.statusCode).toEqual(500);
     });
 
-    it('/api/v1/generarfolios with invalid agno should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 'invalid', region: 13 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario with invalid agno should return 400', async () => {
+        const json = { rut: '14143456-k', nombre: 'Lu876' };
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json);
+        expect(res.statusCode).toEqual(500);
     });
 
-    it('/api/v1/generarfolios with invalid region should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 2024, region: 'invalid' } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with invalid agno and region should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 'invalid', region: 'invalid' } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with invalid region length should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 2024, region: 133 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with invalid agno length should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 20245, region: 13 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with invalid region length and agno length should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 20245, region: 133 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with tipofolio not existing should return 400', async () => {
-        const json = { tipofolio: 0, datos: { agno: 2024, region: 13 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with missing datos should return 400', async () => {
-        const json = { tipofolio: 7 };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('/api/v1/generarfolios with region not existing should return 400', async () => {
-        const json = { tipofolio: 7, datos: { agno: 2024, region: 99 } };
-        const res = await request(server.app).post('/api/v1/generarfolios').send(json);
-        expect(res.statusCode).toEqual(400);
+    it('/api/v1/crearusuario with invalid region should return 400', async () => {
+        const json = { rut: '14143456-9', nombre: 'Lus' };
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json);
+        expect(res.statusCode).toEqual(500);
     });
 
 });

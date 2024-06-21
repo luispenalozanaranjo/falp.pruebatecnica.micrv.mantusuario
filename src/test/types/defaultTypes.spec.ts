@@ -10,7 +10,7 @@ describe('responseType', () => {
       'codigo-error': 0
     };
 
-    expect(response.Respuesta).toEqual('Success');
+    expect(response.Respuesta).toEqual('true');
     expect(response.Detalle).toEqual('Details');
     expect(response.Registro).toEqual('Details');
     expect(response['codigo-error']).toEqual(0);
@@ -18,12 +18,12 @@ describe('responseType', () => {
 
   it('should allow optional "codigo-error" property', () => {
     const response: responseType = {
-      Respuesta: 'Success',
+      Respuesta: 'true',
       Detalle: 'Details',
       Registro : {}
     };
 
-    expect(response.Respuesta).toEqual('Success');
+    expect(response.Respuesta).toEqual('true');
     expect(response.Detalle).toEqual('Details');
     expect(response.Registro).toEqual('Details');
     expect(response['codigo-error']).toBeUndefined();
