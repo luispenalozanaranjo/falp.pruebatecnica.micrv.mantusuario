@@ -1,22 +1,11 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
-import { logger } from '../middlewares/loggins';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 import { usuario } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
 
 export const buscarusuario = async(req: Request, res: Response) => {
-
-    /**
-     * A la fecha de creación de este código, 10-05-2024, los tipos de carnet son los siguientes:
-     *  IdTipoCarnet: 1, NombreTipoCarnet: Carnet Caza Mayor
-     *  IdTipoCarnet: 2, NombreTipoCarnet: Carnet Caza Menor
-     *  IdTipoCarnet: 3, NombreTipoCarnet: Carnet Caza Homologación
-     *  IdTipoCarnet: 4, NombreTipoCarnet: Credencial Aplicador Plaguicidas
-     *  IdTipoCarnet: 5, NombreTipoCarnet: Certificado Mascotas
-     *  IdTipoCarnet: 6, NombreTipoCarnet: Certificado de Inscripción de Establecimiento de expendio de productos farmacéuticos de uso veterinario
-     *  IdTipoCarnet: 7, NombreTipoCarnet: Certificado de Inicio de Actividades Alimentacion Animal
-     */
 
     await AppDataSource.initialize();
 
@@ -44,7 +33,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
             response.Respuesta = 'false';
             response.Detalle = `El Rut ingresado ${ user.rut.toString() } es invalido`;
             response["codigo-error"] = 400;
-            logger.error('Rut no encontrado: ', response);
+            logger_object.error('Rut no encontrado: ', response);
             return res.status(400).json(response);
         }
       }
@@ -56,7 +45,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
     .setParameters({ rut: user.rut, nombre: user.nombre, primerApellido: user.primerApellido, segundoApellido: user.segundoApellido })
     .getMany();
 
-    logger.info("Resultado query", users);
+    logger_object.info("Resultado query", users);
 
 
     if(users.length>0){
@@ -64,7 +53,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
         response.Detalle = "Usuario encontrado con Exito";
         response.Registro = users;
         response["codigo-error"] = 200;
-        logger.info('Respuesta Final: ', response);
+        logger_object.info('Respuesta Final: ', response);
         }
         else
         {
@@ -72,7 +61,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
         response.Detalle = "Usuario no existe";
         response.Registro = users;
         response["codigo-error"] = 400;
-        logger.error('Respuesta Final: ', response);
+        logger_object.error('Respuesta Final: ', response);
         }
 
         await AppDataSource.destroy();

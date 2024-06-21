@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import { config } from './config/config';
+import { logger_object, logger_variable } from './middlewares/loggins';
 
 export class Server {
     
@@ -21,8 +22,9 @@ export class Server {
     constructor() {
         this.app = express();
         this.port = config.app.port;
-        console.log(config.saglog.app);
-        console.log('Iniciando aplicacion');
+        
+        logger_variable.info(`Nombre app es: ${ config.saglog.app }`);
+        logger_variable.info('Iniciando aplicacion');
 
         this.paths = {
             crearusuario: '/api/v1/crearusuario',
@@ -59,7 +61,7 @@ export class Server {
 
     listen(){
         this.app.listen(this.port, () => {
-            console.log(`Servidor corriendo en puerto ${ this.port }`);
+            logger_variable.info(`Servidor corriendo en puerto ${ this.port }`);
         });
     }
 }

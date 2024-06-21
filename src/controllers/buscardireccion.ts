@@ -1,20 +1,10 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import { direccion } from '../entities/Direccion';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 import { AppDataSource } from '../db/db';
 
 export const buscardireccion = async(req: Request, res: Response) => {
-
-    /**
-     * A la fecha de creación de este código, 10-05-2024, los tipos de carnet son los siguientes:
-     *  IdTipoCarnet: 1, NombreTipoCarnet: Carnet Caza Mayor
-     *  IdTipoCarnet: 2, NombreTipoCarnet: Carnet Caza Menor
-     *  IdTipoCarnet: 3, NombreTipoCarnet: Carnet Caza Homologación
-     *  IdTipoCarnet: 4, NombreTipoCarnet: Credencial Aplicador Plaguicidas
-     *  IdTipoCarnet: 5, NombreTipoCarnet: Certificado Mascotas
-     *  IdTipoCarnet: 6, NombreTipoCarnet: Certificado de Inscripción de Establecimiento de expendio de productos farmacéuticos de uso veterinario
-     *  IdTipoCarnet: 7, NombreTipoCarnet: Certificado de Inicio de Actividades Alimentacion Animal
-     */
 
     await AppDataSource.initialize();
 
@@ -32,12 +22,15 @@ export const buscardireccion = async(req: Request, res: Response) => {
         direc.usuarioId = ( typeof usuarioId=== 'undefined' ) ? 0 : Number(usuarioId);
 
         const dir = AppDataSource.getRepository(direccion)
+
   
         const registro = await AppDataSource.getRepository(direccion)
         .createQueryBuilder("direccion") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
         .where("direccion.usuarioId = :usuarioId")
         .setParameters({ usuarioId: direc.usuarioId })
         .getMany();
+
+        logger_object.info("Resultado query", registro);
 
         if(registro.length>0){
             response.Respuesta = 'true';
@@ -66,7 +59,7 @@ export const buscardireccion = async(req: Request, res: Response) => {
         res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
     }
 
@@ -82,7 +75,7 @@ export const metodoInvalido = (req:Request, res:Response) => {
         "codigo-error": 405
     };
 
-    console.log(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
+    logger_variable.info(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
 
     return res.status(405).json(response)
 }
