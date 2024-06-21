@@ -71,7 +71,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
         response.Respuesta = 'false';
         response.Detalle = "Usuario no existe";
         response.Registro = users;
-        response["codigo-error"] = 500;
+        response["codigo-error"] = 400;
         logger.error('Respuesta Final: ', response);
         }
 
