@@ -1,7 +1,7 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
-//import { FoliosService } from '../services/foliosService';
+import { logger } from '../middlewares/loggins';
 import { usuario } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
 
@@ -44,6 +44,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
             response.Respuesta = 'false';
             response.Detalle = `El Rut ingresado ${ user.rut.toString() } es invalido`;
             response["codigo-error"] = 400;
+            logger.error('Rut no encontrado: ', response);
             return res.status(400).json(response);
         }
       }
@@ -55,21 +56,28 @@ export const buscarusuario = async(req: Request, res: Response) => {
     .setParameters({ rut: user.rut, nombre: user.nombre, primerApellido: user.primerApellido, segundoApellido: user.segundoApellido })
     .getMany();
 
+    logger.info("Resultado query", users);
+
+
     if(users.length>0){
         response.Respuesta = 'true';
         response.Detalle = "Usuario encontrado con Exito";
         response.Registro = users;
+        response["codigo-error"] = 200;
+        logger.info('Respuesta Final: ', response);
         }
         else
         {
         response.Respuesta = 'false';
         response.Detalle = "Usuario no existe";
         response.Registro = users;
+        response["codigo-error"] = 500;
+        logger.error('Respuesta Final: ', response);
         }
 
         await AppDataSource.destroy();
-
-        return res.json(response);
+        
+        return res.status(response["codigo-error"]).json(response);
 
         
     } catch ( error:unknown ) {
