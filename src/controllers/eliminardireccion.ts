@@ -2,10 +2,9 @@ import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 
 export const eliminardireccion = async(req: Request, res: Response) => {
-
-    await AppDataSource.initialize();
 
     const response:responseType = {
         Respuesta: '',
@@ -17,10 +16,13 @@ export const eliminardireccion = async(req: Request, res: Response) => {
 
     try {
 
+
         const { id } = req.body;
         const direc = new DireccionEntity();
 
-        direc.id = ( typeof id=== 'undefined' ) ? 0 : Number(id);
+        direc.id = Number(id);
+
+        await AppDataSource.initialize();
 
   
         const registro = AppDataSource.getRepository(DireccionEntity)
@@ -34,6 +36,7 @@ export const eliminardireccion = async(req: Request, res: Response) => {
             response.Respuesta = 'false';
             response.Detalle = "Registro id no se encuentra en nuestra base de datos de direccion";
             response.Registro = {};
+            response["codigo-error"] = 400;
         }
         else
         {
@@ -41,35 +44,34 @@ export const eliminardireccion = async(req: Request, res: Response) => {
             response.Respuesta = 'true';
             response.Detalle = "Registro eliminado en forma exitosa";
             response.Registro = {};
+            response["codigo-error"] = 200;
         }
 
         if((del?.affected!=1)&&(direcci!==null)){
             response.Respuesta = 'false';
             response.Detalle = "Registro no Eliminado";
             response.Registro = {};   
+            response["codigo-error"] = 500;
         }
 
-
         await AppDataSource.destroy();
-
-
-        return res.json(response);
 
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+        
         response.Respuesta = 'false';
-        response.Detalle = 'Error en eliminar direccion';
+        response.Detalle = v1;
         response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
     }
 
-    return res.json(response);
+    return res.status(response["codigo-error"]).json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {

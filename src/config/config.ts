@@ -1,6 +1,9 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: process.cwd() + '/.env' });
 
+import { UsuarioEntity } from '../entities/Usuario'
+import { DireccionEntity } from '../entities/Direccion'
+
 export const config = {
     app:{
         port: parseInt( process.env.APP_PORT as string )
@@ -14,7 +17,7 @@ export const config = {
         database: process.env.FALP_DB,
         synchronize: true,
         logging: true,
-        entities: []
+        entities: [UsuarioEntity,DireccionEntity]
         //subscribers: [],
         //migrations: []
 

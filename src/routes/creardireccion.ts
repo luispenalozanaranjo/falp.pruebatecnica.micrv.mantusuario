@@ -12,7 +12,7 @@ router.post('/', [
     check("calle", "El campo 'calle' es obligatorio").not().isEmpty(),
 
     check("numero", "El campo 'numero' es obligatorio").not().isEmpty(),
-    check("numero", "Si va a enviar el campo 'numero', este debe ser un numero").optional().matches(regexSoloNumeros),
+    check("numero", "Si va a enviar el campo 'numero', este debe ser un numerico").optional().matches(regexSoloNumeros),
 
     check("ciudad", "El campo 'ciudad' es obligatorio").not().isEmpty(),
 

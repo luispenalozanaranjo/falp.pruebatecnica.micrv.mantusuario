@@ -4,11 +4,10 @@ import {Fn} from '../function/function';
 import { UsuarioEntity } from '../entities/Usuario';
 import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 
 export const creardireccion = async(req: Request, res: Response) => {
 
-
-    await AppDataSource.initialize();
 
     const response:responseType = {
         Respuesta: '',
@@ -21,11 +20,12 @@ export const creardireccion = async(req: Request, res: Response) => {
         const { calle, numero, ciudad, usuarioId } = req.body;
         const dir = new DireccionEntity();
 
-        dir.calle = ( typeof calle=== 'undefined' ) ? '' : calle.toString();
-        dir.numero = ( typeof numero=== 'undefined' ) ? '' : numero.toString();
-        dir.ciudad = ( typeof ciudad=== 'undefined' ) ? '' : ciudad.toString();
-        dir.usuarioId = ( typeof usuarioId=== 'undefined' ) ? '' : usuarioId;
+        dir.calle     = calle.toString();
+        dir.numero    = numero.toString();
+        dir.ciudad    = ciudad.toString();
+        dir.usuarioId = usuarioId;
 
+        await AppDataSource.initialize();
 
         const usu = AppDataSource.getRepository(UsuarioEntity)
   
@@ -38,12 +38,14 @@ export const creardireccion = async(req: Request, res: Response) => {
             response.Respuesta = 'true';
             response.Detalle = "Registro Insertado de forma Exitosa";
             response.Registro = dir;
+            response["codigo-error"] = 200;
             }
             else
             {
             response.Respuesta = 'true';
             response.Detalle = "Registro no se encuentra en nuestra base de datos de usuario";
             response.Registro = dir;
+            response["codigo-error"] = 400;
             }
 
 
@@ -51,17 +53,19 @@ export const creardireccion = async(req: Request, res: Response) => {
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+        
         response.Respuesta = 'false';
-        response.Detalle = 'Error en crear direccion';
+        response.Detalle = v1;
+        response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
     }
 
-    return res.json(response);
+    return res.status(response["codigo-error"]).json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {

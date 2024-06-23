@@ -3,11 +3,10 @@ import { responseType } from '../types/defaultTypes';
 import { UsuarioEntity } from '../entities/Usuario';
 import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 
 export const actualizardireccion = async(req: Request, res: Response) => {
 
-
-    await AppDataSource.initialize();
 
     const response:responseType = {
         Respuesta: '',
@@ -19,6 +18,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
 
     try {
 
+
         const { id, calle, numero, ciudad, usuarioId } = req.body;
         const dir = new DireccionEntity();
 
@@ -28,6 +28,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
         dir.ciudad = ( typeof ciudad=== 'undefined' ) ? '' : ciudad.toString();
         dir.usuarioId = ( typeof usuarioId=== 'undefined' ) ? '' : usuarioId;
 
+        await AppDataSource.initialize();
 
         const usu = AppDataSource.getRepository(UsuarioEntity)
   
@@ -74,13 +75,15 @@ export const actualizardireccion = async(req: Request, res: Response) => {
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+        
         response.Respuesta = 'false';
-        response.Detalle = 'Error en crear direccion';
+        response.Detalle = v1;
+        response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
     }
 

@@ -5,18 +5,17 @@ import { logger_object, logger_variable  } from '../middlewares/loggins';
 import { UsuarioEntity } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
 
-export const buscarusuario = async(req: Request, res: Response) => {
 
-    await AppDataSource.initialize();
+export const buscarusuario = async(req: Request, res: Response) => {
 
     const response:responseType = {
         Respuesta: '',
         Detalle: '',
         Registro: {}
     };
-
+    
     try {
-
+        
         const { rut, nombre, primer_apellido, segundo_apellido } = req.query;
         const user = new UsuarioEntity();
 
@@ -33,17 +32,20 @@ export const buscarusuario = async(req: Request, res: Response) => {
             response.Respuesta = 'false';
             response.Detalle = `El Rut ingresado ${ user.rut.toString() } es invalido`;
             response["codigo-error"] = 400;
-            logger_object.error('Rut no encontrado: ', response);
+            logger_object.error('Rut Invalido: ', response);
             return res.status(400).json(response);
         }
       }
 
+      await AppDataSource.initialize();
 
+    
         const users = await AppDataSource.getRepository(UsuarioEntity)
     .createQueryBuilder("usuario") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
     .where("usuario.rut = :rut or usuario.nombre = :nombre or usuario.primerApellido = :primerApellido or usuario.segundoApellido = :segundoApellido")
     .setParameters({ rut: user.rut, nombre: user.nombre, primerApellido: user.primerApellido, segundoApellido: user.segundoApellido })
     .getMany();
+
 
     logger_object.info("Resultado query", users);
 
@@ -66,23 +68,24 @@ export const buscarusuario = async(req: Request, res: Response) => {
 
         await AppDataSource.destroy();
         
-        return res.status(response["codigo-error"]).json(response);
-
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+
         response.Respuesta = 'false';
-        response.Detalle = 'Error en busqueda de Usuario';
+        response.Detalle = v1;
         response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
+        
     }
+    
+    return res.status(response["codigo-error"]).json(response);
 
-    return res.json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {

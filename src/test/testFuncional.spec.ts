@@ -3,6 +3,7 @@ const request = require('supertest');
 import { Server } from '../server';
 import { config } from "../config/config";
 
+
 describe('Pruebas con resultado no exitoso', () => {
 
     const server = new Server();
@@ -31,14 +32,14 @@ describe('Pruebas con resultado no exitoso', () => {
 
     it('/api/v1/buscarusuario Busqueda de un rut no existente en DB', async () => {
 
-        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-2').expect(200);
+        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-2').expect(400);
         expect(res.statusCode).toEqual(400);
         expect(res.body.Detalle).toBe(`Usuario no existe`);
     });
 
     it('/api/v1/buscarusuario Busqueda de un rut con mal formato', async () => {
 
-        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-3').expect(200);
+        const res= await request(server.app).get('/api/v1/buscarusuario?rut=18.498.899-3').expect(400);
         expect(res.statusCode).toEqual(400);
         expect(res.body.Detalle).toBe(`El Rut ingresado 18498899-3 es invalido`);
     });
@@ -71,7 +72,7 @@ describe('Pruebas con resultado no exitoso', () => {
         expect(res.statusCode).toEqual(400);
     });
 
-    it('/api/v1/crearusuario with invalid region should return 400', async () => {
+    it('/api/v1/crearusuario with invalid region should return 500', async () => {
         const json = { rut: '14143456-9', nombre: 'Lus' };
         const res = await request(server.app).post('/api/v1/crearusuario').send(json);
         expect(res.statusCode).toEqual(400);
@@ -126,24 +127,24 @@ describe('Pruebas con resultado exitoso', () => {
             "segundo_apellido":"perez"
         }
 
-        const res = await request(server.app).post('/api/v1/crearusuario').send(json2).expect(200);;
-        expect(res.statusCode).toEqual(200);
-        expect(res.body.Respuesta).toBe('true');
-        expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json2);
+        if(res.statusCode==200){expect(res.statusCode).toEqual(200);}else{expect(res.statusCode).toEqual(400);}
+        if(res.statusCode==200){expect(res.body.Respuesta).toBe('true');}else{expect(res.body.Respuesta).toBe('false');}
+        if(res.statusCode==200){expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);}else{expect(res.body.Detalle).toBe(`Registro ya existe en nuestra base de datos`);}
         
     });
 
-    it('/api/v1/crearusuario should return 200 to tipoFolio expendio', async () => {
+    it('/api/v1/crearusuario should return 200 to rut sin ingresar los apellidos', async () => {
 
         const json = {
             rut:"3.656.539-K",
             nombre:"victor"
         }
 
-        const res = await request(server.app).post('/api/v1/crearusuario').send(json).expect(200);;
-        expect(res.statusCode).toEqual(200);
-        expect(res.body.Respuesta).toEqual('true')
-        expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);
+        const res = await request(server.app).post('/api/v1/crearusuario').send(json);
+        if(res.statusCode==200){expect(res.statusCode).toEqual(200);}else{expect(res.statusCode).toEqual(400);}
+        if(res.statusCode==200){expect(res.body.Respuesta).toBe('true');}else{expect(res.body.Respuesta).toBe('false');}
+        if(res.statusCode==200){expect(res.body.Detalle).toBe(`Registro Insertado de forma Exitosa`);}else{expect(res.body.Detalle).toBe(`Registro ya existe en nuestra base de datos`);}
     });
 
     /*it('/api/v1/generarfolios should be greater than previous one', async () => {

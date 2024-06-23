@@ -6,8 +6,6 @@ import { AppDataSource } from '../db/db';
 
 export const buscardireccion = async(req: Request, res: Response) => {
 
-    await AppDataSource.initialize();
-
     const response:responseType = {
         Respuesta: '',
         Detalle: '',
@@ -21,49 +19,50 @@ export const buscardireccion = async(req: Request, res: Response) => {
 
         direc.usuarioId = ( typeof usuarioId=== 'undefined' ) ? 0 : Number(usuarioId);
 
-        const dir = AppDataSource.getRepository(DireccionEntity)
+        await AppDataSource.initialize();
 
-  
         const registro = await AppDataSource.getRepository(DireccionEntity)
         .createQueryBuilder("direccion") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
         .where("direccion.usuarioId = :usuarioId")
         .setParameters({ usuarioId: direc.usuarioId })
         .getMany();
+        
 
         logger_object.info("Resultado query", registro);
 
-        if(registro.length>0){
+        if(registro.length>0)
+        {
             response.Respuesta = 'true';
             response.Detalle = "Registro encontrado con Exito";
             response.Registro = registro;
-            }
-            else
-            {
+            response["codigo-error"] = 200;
+        }
+          else
+        {
             response.Respuesta = 'true';
             response.Detalle = "Registro no encontrado";
             response.Registro = registro;
-            }
+            response["codigo-error"] = 400;
+        }
 
         await AppDataSource.destroy();
-
-
-        return res.json(response);
 
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+        
         response.Respuesta = 'false';
-        response.Detalle = 'Error en busqueda de Usuario';
+        response.Detalle = v1;
         response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
             logger_object.error(error);
         }
     }
 
-    return res.json(response);
+    return res.status(response["codigo-error"]).json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {

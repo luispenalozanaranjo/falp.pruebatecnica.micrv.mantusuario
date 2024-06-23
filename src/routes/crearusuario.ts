@@ -10,7 +10,7 @@ const router = Router();
 router.post('/', [
 
     check("rut", "El campo 'rut' es obligatorio").not().isEmpty(),
-    check("rut", "Si va a enviar el campo 'rut', este debe contener 4 números").isLength({ min: 9, max: 12 }),
+    check("rut", "Si va a enviar el campo 'rut', este debe contener un minimo de 4 a un maximo de 12 caracteres").isLength({ min: 9, max: 12 }),
 
     check("nombre", "El campo 'nombre' es obligatorio").not().isEmpty(),
     check("nombre", "El campo 'nombre' debe ser letra").matches(regexSoloLetras),

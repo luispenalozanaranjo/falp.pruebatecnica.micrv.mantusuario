@@ -3,11 +3,10 @@ import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
 import { UsuarioEntity } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
+import { logger_object, logger_variable  } from '../middlewares/loggins';
 
 export const crearusuario = async(req: Request, res: Response) => {
 
-
-    await AppDataSource.initialize();
 
     const response:responseType = {
         Respuesta: '',
@@ -20,30 +19,27 @@ export const crearusuario = async(req: Request, res: Response) => {
         const { rut, nombre, primer_apellido, segundo_apellido } = req.body;
         const user = new UsuarioEntity();
 
-        user.rut = ( typeof rut=== 'undefined' ) ? '' : Fn.format_rut(rut.toString());
-        user.nombre = ( typeof nombre=== 'undefined' ) ? '' : nombre.toString();
+        user.rut = Fn.format_rut(rut.toString());
+        user.nombre = nombre.toString();
         user.primerApellido = ( typeof primer_apellido=== 'undefined' ) ? '' : primer_apellido.toString();
         user.segundoApellido = ( typeof segundo_apellido=== 'undefined' ) ? '' : segundo_apellido.toString();
 
-
-        //let rutCompleto =Fn.format_rut(user.rut.toString());
-        // Validar si el campo tipofolio es un número
-   
-    if(user.rut.toString()!='')
-      {
+        // Validar si el rut ingresado es valido
         if( !Fn.validaRut(user.rut.toString()) ){
             response.Respuesta = 'false';
             response.Detalle = `El Rut ingresado ${ user.rut.toString() } es invalido`;
             response.Registro = user;
+            response["codigo-error"] = 400;
             return res.status(400).json(response);
         }
-      }
+        
+        await AppDataSource.initialize();
 
       const usu = AppDataSource.getRepository(UsuarioEntity)
-
+      
       const registro = await usu.findOneBy({
         rut: user.rut,
-    })
+      })
 
 
       if(typeof registro?.usuarioId==='undefined'){
@@ -51,35 +47,34 @@ export const crearusuario = async(req: Request, res: Response) => {
       response.Respuesta = 'true';
       response.Detalle = "Registro Insertado de forma Exitosa";
       response.Registro = user;
+      response["codigo-error"] = 200;
       }
       else
       {
-      response.Respuesta = 'true';
+      response.Respuesta = 'false';
       response.Detalle = "Registro ya existe en nuestra base de datos";
       response.Registro = user;
+      response["codigo-error"] = 400;
       }
 
       await AppDataSource.destroy();
 
-
-
-      return res.status(200).json(response);
-
         
     } catch ( error:unknown ) {
 
+        const v1:string = error as string;
+        
         response.Respuesta = 'false';
-        response.Detalle = 'Error en crear usuario';
+        response.Detalle = v1;
         response.Registro={},
         response["codigo-error"] = 500;
-        res.status(500);
 
         if( error instanceof Error ){
-            console.log(error);
+            logger_object.error(error);
         }
     }
 
-    return res.json(response);
+    return res.status(response["codigo-error"]).json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {
@@ -91,7 +86,7 @@ export const metodoInvalido = (req:Request, res:Response) => {
         "codigo-error": 405
     };
 
-    console.log(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
+    logger_variable.error(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
 
     return res.status(405).json(response)
 }

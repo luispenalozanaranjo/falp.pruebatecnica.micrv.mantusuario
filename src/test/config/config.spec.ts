@@ -1,5 +1,8 @@
 import { describe, expect, it } from "@jest/globals";
 import { config } from '../../config/config';
+import { UsuarioEntity } from '../../entities/Usuario'
+import { DireccionEntity } from '../../entities/Direccion'
+
 
 describe('Config', () => {
   it('should have the correct app port', () => {
@@ -27,7 +30,7 @@ describe('Config', () => {
   });
 
   it('should have the correct the entities', () => {
-    expect(config.db.entities).toStrictEqual([]);
+    expect(config.db.entities).toStrictEqual([UsuarioEntity,DireccionEntity]);
   });
 
   it('should have the correct logging', () => {
