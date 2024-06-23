@@ -1,7 +1,8 @@
 node_modules/
-.env
 package-lock.json
-dist/
-logs/
+build/
 coverage/
 junit.xml
+logs/
+docker-compose.yml
+.env

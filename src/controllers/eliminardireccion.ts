@@ -1,6 +1,6 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
-import { direccion } from '../entities/Direccion';
+import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
 
 export const eliminardireccion = async(req: Request, res: Response) => {
@@ -18,12 +18,12 @@ export const eliminardireccion = async(req: Request, res: Response) => {
     try {
 
         const { id } = req.body;
-        const direc = new direccion();
+        const direc = new DireccionEntity();
 
         direc.id = ( typeof id=== 'undefined' ) ? 0 : Number(id);
 
   
-        const registro = AppDataSource.getRepository(direccion)
+        const registro = AppDataSource.getRepository(DireccionEntity)
 
         const direcci = await registro.findOneBy({
             id: direc.id,

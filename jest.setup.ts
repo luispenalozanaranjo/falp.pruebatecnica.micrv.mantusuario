@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import { config } from './src/config/config';
-import { usuario } from './src/entities/Usuario'
-import { direccion } from './src/entities/Direccion'
+import { UsuarioEntity } from './src/entities/Usuario'
+import { DireccionEntity } from './src/entities/Direccion'
 import { afterAll, beforeAll } from '@jest/globals';
 
 let connection: DataSource;
@@ -17,7 +17,7 @@ beforeAll(async () => {
         database: config.db.database,
         synchronize: true,
         logging: true,
-        entities: [usuario,direccion]
+        entities: [UsuarioEntity,DireccionEntity]
     });
 });
 

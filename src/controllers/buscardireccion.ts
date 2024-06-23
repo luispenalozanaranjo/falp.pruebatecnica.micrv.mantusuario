@@ -1,6 +1,6 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
-import { direccion } from '../entities/Direccion';
+import { DireccionEntity } from '../entities/Direccion';
 import { logger_object, logger_variable  } from '../middlewares/loggins';
 import { AppDataSource } from '../db/db';
 
@@ -17,14 +17,14 @@ export const buscardireccion = async(req: Request, res: Response) => {
     try {
 
         const { usuarioId } = req.query;
-        const direc = new direccion();
+        const direc = new DireccionEntity();
 
         direc.usuarioId = ( typeof usuarioId=== 'undefined' ) ? 0 : Number(usuarioId);
 
-        const dir = AppDataSource.getRepository(direccion)
+        const dir = AppDataSource.getRepository(DireccionEntity)
 
   
-        const registro = await AppDataSource.getRepository(direccion)
+        const registro = await AppDataSource.getRepository(DireccionEntity)
         .createQueryBuilder("direccion") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
         .where("direccion.usuarioId = :usuarioId")
         .setParameters({ usuarioId: direc.usuarioId })

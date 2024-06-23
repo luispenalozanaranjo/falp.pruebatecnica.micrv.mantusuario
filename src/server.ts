@@ -62,6 +62,12 @@ export class Server {
     listen(){
         this.app.listen(this.port, () => {
             logger_variable.info(`Servidor corriendo en puerto ${ this.port }`);
+        }).on('error', (error: NodeJS.ErrnoException) => {
+            if (error.code === 'EADDRINUSE') {
+                logger_variable.error(`El puerto ${this.port} ya está en uso`);
+            } else {
+                logger_variable.error(`Error al iniciar el servidor: ${error.message}`);
+            }
         });
     }
 }

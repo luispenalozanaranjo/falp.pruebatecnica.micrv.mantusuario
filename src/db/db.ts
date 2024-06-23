@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import { config } from '../config/config';
-import { usuario } from '../entities/Usuario'
-import { direccion } from '../entities/Direccion'
+import { UsuarioEntity } from '../entities/Usuario'
+import { DireccionEntity } from '../entities/Direccion'
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -12,5 +12,5 @@ export const AppDataSource = new DataSource({
     database: config.db.database,
     synchronize: true,
     logging: true,
-    entities: [usuario,direccion]
+    entities: [UsuarioEntity,DireccionEntity]
 })

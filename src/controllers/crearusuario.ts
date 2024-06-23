@@ -1,7 +1,7 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
-import { usuario } from '../entities/Usuario';
+import { UsuarioEntity } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
 
 export const crearusuario = async(req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const crearusuario = async(req: Request, res: Response) => {
     try {
 
         const { rut, nombre, primer_apellido, segundo_apellido } = req.body;
-        const user = new usuario();
+        const user = new UsuarioEntity();
 
         user.rut = ( typeof rut=== 'undefined' ) ? '' : Fn.format_rut(rut.toString());
         user.nombre = ( typeof nombre=== 'undefined' ) ? '' : nombre.toString();
@@ -39,7 +39,7 @@ export const crearusuario = async(req: Request, res: Response) => {
         }
       }
 
-      const usu = AppDataSource.getRepository(usuario)
+      const usu = AppDataSource.getRepository(UsuarioEntity)
 
       const registro = await usu.findOneBy({
         rut: user.rut,

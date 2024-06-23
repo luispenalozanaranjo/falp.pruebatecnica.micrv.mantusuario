@@ -2,7 +2,7 @@ import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
 import { logger_object, logger_variable  } from '../middlewares/loggins';
-import { usuario } from '../entities/Usuario';
+import { UsuarioEntity } from '../entities/Usuario';
 import { AppDataSource } from '../db/db';
 
 export const buscarusuario = async(req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
     try {
 
         const { rut, nombre, primer_apellido, segundo_apellido } = req.query;
-        const user = new usuario();
+        const user = new UsuarioEntity();
 
         user.rut = ( typeof rut=== 'undefined' ) || (rut == '') ? '%' : Fn.format_rut(rut.toString());
         user.nombre = ( typeof nombre=== 'undefined' ) || (nombre == '') ? '%' : nombre.toString();
@@ -39,7 +39,7 @@ export const buscarusuario = async(req: Request, res: Response) => {
       }
 
 
-        const users = await AppDataSource.getRepository(usuario)
+        const users = await AppDataSource.getRepository(UsuarioEntity)
     .createQueryBuilder("usuario") // first argument is an alias. Alias is what you are selecting - photos. You must specify it.
     .where("usuario.rut = :rut or usuario.nombre = :nombre or usuario.primerApellido = :primerApellido or usuario.segundoApellido = :segundoApellido")
     .setParameters({ rut: user.rut, nombre: user.nombre, primerApellido: user.primerApellido, segundoApellido: user.segundoApellido })

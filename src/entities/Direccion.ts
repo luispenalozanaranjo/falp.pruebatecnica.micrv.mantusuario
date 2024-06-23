@@ -1,8 +1,10 @@
-import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, Index} from 'typeorm'
+import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, Index, ManyToOne, JoinColumn} from 'typeorm'
+import {UsuarioEntity} from './Usuario'
+import { JoinAttribute } from 'typeorm/query-builder/JoinAttribute'
 
-@Entity()
+@Entity({name:"direccion"})
 @Index(['id'], { unique: true })
-export class direccion extends BaseEntity {
+export class DireccionEntity extends BaseEntity {
     mensaje(mensaje: any) {
         throw new Error('Method not implemented.')
     }
@@ -22,4 +24,9 @@ export class direccion extends BaseEntity {
     @Column()
     usuarioId:number
     static assign: any
+
+    @ManyToOne(()=>UsuarioEntity, (usuario)=>usuario.usuarioId)
+    @JoinColumn({name:"usuarioId"})
+    usuario!:UsuarioEntity
+
 }

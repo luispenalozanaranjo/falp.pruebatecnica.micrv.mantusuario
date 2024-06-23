@@ -1,8 +1,8 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
 import {Fn} from '../function/function';
-import { usuario } from '../entities/Usuario';
-import { direccion } from '../entities/Direccion';
+import { UsuarioEntity } from '../entities/Usuario';
+import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
 
 export const creardireccion = async(req: Request, res: Response) => {
@@ -19,7 +19,7 @@ export const creardireccion = async(req: Request, res: Response) => {
     try {
 
         const { calle, numero, ciudad, usuarioId } = req.body;
-        const dir = new direccion();
+        const dir = new DireccionEntity();
 
         dir.calle = ( typeof calle=== 'undefined' ) ? '' : calle.toString();
         dir.numero = ( typeof numero=== 'undefined' ) ? '' : numero.toString();
@@ -27,7 +27,7 @@ export const creardireccion = async(req: Request, res: Response) => {
         dir.usuarioId = ( typeof usuarioId=== 'undefined' ) ? '' : usuarioId;
 
 
-        const usu = AppDataSource.getRepository(usuario)
+        const usu = AppDataSource.getRepository(UsuarioEntity)
   
         const registro = await usu.findOneBy({
           usuarioId: dir.usuarioId,

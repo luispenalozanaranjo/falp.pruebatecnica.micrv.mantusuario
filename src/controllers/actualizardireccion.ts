@@ -1,7 +1,7 @@
 import e, { Request, Response } from 'express';
 import { responseType } from '../types/defaultTypes';
-import { usuario } from '../entities/Usuario';
-import { direccion } from '../entities/Direccion';
+import { UsuarioEntity } from '../entities/Usuario';
+import { DireccionEntity } from '../entities/Direccion';
 import { AppDataSource } from '../db/db';
 
 export const actualizardireccion = async(req: Request, res: Response) => {
@@ -20,7 +20,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
     try {
 
         const { id, calle, numero, ciudad, usuarioId } = req.body;
-        const dir = new direccion();
+        const dir = new DireccionEntity();
 
         dir.id = ( typeof id=== 'undefined' ) ? 0 : id;
         dir.calle = ( typeof calle=== 'undefined' ) ? '' : calle.toString();
@@ -29,7 +29,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
         dir.usuarioId = ( typeof usuarioId=== 'undefined' ) ? '' : usuarioId;
 
 
-        const usu = AppDataSource.getRepository(usuario)
+        const usu = AppDataSource.getRepository(UsuarioEntity)
   
         const registro = await usu.findOneBy({
           usuarioId: dir.usuarioId,
@@ -42,7 +42,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
             response.Registro = {};
         }
 
-            const dire = AppDataSource.getRepository(direccion)
+            const dire = AppDataSource.getRepository(DireccionEntity)
 
             const direcci = await dire.findOneBy({
                 id: dir.id,

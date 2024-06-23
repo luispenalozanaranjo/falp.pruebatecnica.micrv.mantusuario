@@ -1,8 +1,9 @@
-import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, Index} from 'typeorm'
+import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, Index, OneToMany} from 'typeorm'
+import {DireccionEntity} from './Direccion'
 
-@Entity()
+@Entity({name:"usuario"})
 @Index(['rut'], { unique: true })
-export class usuario extends BaseEntity {
+export class UsuarioEntity extends BaseEntity {
     mensaje(mensaje: any) {
         throw new Error('Method not implemented.')
     }
@@ -26,5 +27,8 @@ export class usuario extends BaseEntity {
     })
     segundoApellido:string
     static assign: any
+
+    @OneToMany(()=>DireccionEntity, (direccion)=>direccion.usuario)
+    usuario!:DireccionEntity[];
 
 }
