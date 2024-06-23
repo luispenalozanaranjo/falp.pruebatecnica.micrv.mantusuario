@@ -44,6 +44,18 @@ describe('Pruebas con resultado no exitoso', () => {
         expect(res.body.Detalle).toBe(`El Rut ingresado 18498899-3 es invalido`);
     });
 
+    it('/api/v1/buscardireccion Busqueda de una direccion no existente en DB', async () => {
+
+        const res= await request(server.app).get('/api/v1/buscardireccion?usuarioId=202').expect(400);
+        expect(res.statusCode).toEqual(400);
+    });
+
+    it('/api/v1/buscardireccion Busqueda de una direccion no existente en DB', async () => {
+
+        const res= await request(server.app).get('/api/v1/buscardireccion?usuarioId=202o').expect(400);
+        expect(res.statusCode).toEqual(400);
+    });
+
     it('/api/v1/crearusuario without body should return 400', async () => {
         const res = await request(server.app).post('/api/v1/crearusuario');
         expect(res.statusCode).toEqual(400);
@@ -115,6 +127,12 @@ describe('Pruebas con resultado exitoso', () => {
     it('/api/v1/buscarusuario Busqueda de un rut existente en DB', async () => {
 
         const res= await request(server.app).get('/api/v1/buscarusuario?rut=14143456-k').expect(200);
+        expect(res.statusCode).toEqual(200);
+    });
+
+    it('/api/v1/buscardireccion Busqueda de una direccion existente en DB', async () => {
+
+        const res= await request(server.app).get('/api/v1/buscardireccion?usuarioId=22').expect(200);
         expect(res.statusCode).toEqual(200);
     });
 
