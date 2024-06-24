@@ -4,5 +4,5 @@ build/
 coverage/
 junit.xml
 logs/
-docker-compose.yml
-.env
+#docker-compose.yml
+#.env

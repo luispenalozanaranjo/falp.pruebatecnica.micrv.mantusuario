@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: s0p0rt341T!
+      POSTGRES_PORT: 5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  falp.pruebatecnica.micrv.mantusuario:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: falp.pruebatecnica.micrv.mantusuario:latest
+    container_name: falp.pruebatecnica.micrv.mantusuario
+    restart : always
+    ports:
+      - 8689:80
+
+# se confirman los volumenes
+volumes:
+  Postgresql:
+networks:
+  falp.pruebatecnica.micrv.mantusuario:
+    name: falp.pruebatecnica.micrv.mantusuario
