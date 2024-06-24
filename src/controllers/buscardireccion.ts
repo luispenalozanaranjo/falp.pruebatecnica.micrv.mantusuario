@@ -7,6 +7,7 @@ import { AppDataSource } from '../db/db';
 export const buscardireccion = async(req: Request, res: Response) => {
 
     const response:responseType = {
+        "codigo-error": 0,
         Respuesta: '',
         Detalle: '',
         Registro: {}
@@ -32,17 +33,17 @@ export const buscardireccion = async(req: Request, res: Response) => {
 
         if(registro.length>0)
         {
+            response["codigo-error"] = 200;
             response.Respuesta = 'true';
             response.Detalle = "Registro encontrado con Exito";
             response.Registro = registro;
-            response["codigo-error"] = 200;
         }
           else
         {
+            response["codigo-error"] = 400;
             response.Respuesta = 'true';
             response.Detalle = "Registro no encontrado";
             response.Registro = registro;
-            response["codigo-error"] = 400;
         }
 
         await AppDataSource.destroy();
@@ -52,10 +53,10 @@ export const buscardireccion = async(req: Request, res: Response) => {
 
         const v1:string = error as string;
         
+        response["codigo-error"] = 500,
         response.Respuesta = 'false';
         response.Detalle = v1;
-        response.Registro={},
-        response["codigo-error"] = 500;
+        response.Registro={}
 
         if( error instanceof Error ){
             logger_object.error(error);
@@ -68,10 +69,10 @@ export const buscardireccion = async(req: Request, res: Response) => {
 export const metodoInvalido = (req:Request, res:Response) => {
 
     const response:responseType = {
+        "codigo-error": 405,
         Respuesta: 'false',
         Detalle: `Cannot ${ req.method } to this endpoint`,
-        Registro: {},
-        "codigo-error": 405
+        Registro: {}
     };
 
     logger_variable.info(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);

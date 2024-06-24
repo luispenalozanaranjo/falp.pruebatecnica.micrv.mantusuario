@@ -7,14 +7,15 @@ import { logger_object, logger_variable  } from '../middlewares/loggins';
 
 export const actualizardireccion = async(req: Request, res: Response) => {
 
+    let UpdateResult;
 
     const response:responseType = {
+        "codigo-error": 0,
         Respuesta: '',
         Detalle: '',
         Registro: {}
     };
 
-    let UpdateResult;
 
     try {
 
@@ -37,7 +38,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
         })
 
         if(registro===null){
-            
+            response["codigo-error"] = 400;
             response.Respuesta = 'true';
             response.Detalle = "Registro no se encuentra en nuestra base de datos de usuario";
             response.Registro = {};
@@ -50,7 +51,7 @@ export const actualizardireccion = async(req: Request, res: Response) => {
             });
 
             if((direcci===null)&&(registro!==null)){
-            
+                response["codigo-error"] = 400;
                 response.Respuesta = 'true';
                 response.Detalle = "Registro no se encuentra en nuestra base de datos de direccion";
                 response.Registro = {};
@@ -59,12 +60,14 @@ export const actualizardireccion = async(req: Request, res: Response) => {
             if((direcci!==null)&&(registro!==null)){
 
             UpdateResult=await dire.update({id:dir.id},{calle:dir.calle, numero:dir.numero,ciudad:dir.ciudad,usuarioId:dir.usuarioId});
+            response["codigo-error"] = 200;
             response.Respuesta = 'true';
             response.Detalle = "Registro Actualizado de forma Exitosa";
             response.Registro = dir;
             }
 
             if((UpdateResult?.affected!=1)&&(direcci!==null)&&(registro!==null)){
+                response["codigo-error"] = 500;
                 response.Respuesta = 'false';
                 response.Detalle = "Registro no Actualizado";
                 response.Registro = {};   
@@ -77,29 +80,28 @@ export const actualizardireccion = async(req: Request, res: Response) => {
 
         const v1:string = error as string;
         
+        response["codigo-error"] = 500;
         response.Respuesta = 'false';
         response.Detalle = v1;
-        response.Registro={},
-        response["codigo-error"] = 500;
+        response.Registro={}
 
         if( error instanceof Error ){
             logger_object.error(error);
         }
     }
-
-    return res.json(response);
+    return res.status(Number(response["codigo-error"])).json(response);
 };
 
 export const metodoInvalido = (req:Request, res:Response) => {
 
     const response:responseType = {
+        "codigo-error": 405,
         Respuesta: 'false',
         Detalle: `Cannot ${ req.method } to this endpoint`,
-        "codigo-error": 405,
         Registro: {}
     };
 
-    console.log(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
+    logger_variable.info(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
 
     return res.status(405).json(response)
 }

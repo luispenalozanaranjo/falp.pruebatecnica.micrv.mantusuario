@@ -10,6 +10,7 @@ export const creardireccion = async(req: Request, res: Response) => {
 
 
     const response:responseType = {
+        "codigo-error": 0,
         Respuesta: '',
         Detalle: '',
         Registro: {}
@@ -35,17 +36,17 @@ export const creardireccion = async(req: Request, res: Response) => {
 
         if(typeof registro?.usuarioId!=='undefined'){
             await dir.save();
+            response["codigo-error"] = 200;
             response.Respuesta = 'true';
             response.Detalle = "Registro Insertado de forma Exitosa";
             response.Registro = dir;
-            response["codigo-error"] = 200;
             }
             else
             {
-            response.Respuesta = 'true';
+            response["codigo-error"] = 400;
+            response.Respuesta = 'false';
             response.Detalle = "Registro no se encuentra en nuestra base de datos de usuario";
             response.Registro = dir;
-            response["codigo-error"] = 400;
             }
 
 
@@ -54,11 +55,11 @@ export const creardireccion = async(req: Request, res: Response) => {
     } catch ( error:unknown ) {
 
         const v1:string = error as string;
-        
+      
+        response["codigo-error"] = 500;
         response.Respuesta = 'false';
         response.Detalle = v1;
-        response.Registro={},
-        response["codigo-error"] = 500;
+        response.Registro={};
 
         if( error instanceof Error ){
             logger_object.error(error);
@@ -71,13 +72,13 @@ export const creardireccion = async(req: Request, res: Response) => {
 export const metodoInvalido = (req:Request, res:Response) => {
 
     const response:responseType = {
+        "codigo-error": 405,
         Respuesta: 'false',
         Detalle: `Cannot ${ req.method } to this endpoint`,
-        "codigo-error": 405,
         Registro: {}
     };
 
-    console.log(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
+    logger_variable.info(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
 
     return res.status(405).json(response)
 }

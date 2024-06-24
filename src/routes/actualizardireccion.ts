@@ -10,6 +10,7 @@ const router = Router();
 router.post('/', [
 
     check("id", "El campo 'id' es obligatorio").not().isEmpty(),
+    check("id", "Si va a enviar el campo 'id', este debe ser un numero").optional().matches(regexSoloNumeros),
 
     check("calle", "El campo 'calle' es obligatorio").not().isEmpty(),
 

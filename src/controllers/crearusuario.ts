@@ -9,6 +9,7 @@ export const crearusuario = async(req: Request, res: Response) => {
 
 
     const response:responseType = {
+        "codigo-error": 0,
         Respuesta: '',
         Detalle: '',
         Registro: {}
@@ -26,10 +27,10 @@ export const crearusuario = async(req: Request, res: Response) => {
 
         // Validar si el rut ingresado es valido
         if( !Fn.validaRut(user.rut.toString()) ){
+            response["codigo-error"] = 400;
             response.Respuesta = 'false';
             response.Detalle = `El Rut ingresado ${ user.rut.toString() } es invalido`;
             response.Registro = user;
-            response["codigo-error"] = 400;
             return res.status(400).json(response);
         }
         
@@ -44,17 +45,17 @@ export const crearusuario = async(req: Request, res: Response) => {
 
       if(typeof registro?.usuarioId==='undefined'){
       await user.save();
+      response["codigo-error"] = 200;
       response.Respuesta = 'true';
       response.Detalle = "Registro Insertado de forma Exitosa";
       response.Registro = user;
-      response["codigo-error"] = 200;
       }
       else
       {
+      response["codigo-error"] = 400;
       response.Respuesta = 'false';
       response.Detalle = "Registro ya existe en nuestra base de datos";
       response.Registro = user;
-      response["codigo-error"] = 400;
       }
 
       await AppDataSource.destroy();
@@ -63,11 +64,11 @@ export const crearusuario = async(req: Request, res: Response) => {
     } catch ( error:unknown ) {
 
         const v1:string = error as string;
-        
+    
+        response["codigo-error"] = 500;
         response.Respuesta = 'false';
         response.Detalle = v1;
-        response.Registro={},
-        response["codigo-error"] = 500;
+        response.Registro={}
 
         if( error instanceof Error ){
             logger_object.error(error);
@@ -80,10 +81,10 @@ export const crearusuario = async(req: Request, res: Response) => {
 export const metodoInvalido = (req:Request, res:Response) => {
 
     const response:responseType = {
+        "codigo-error": 405,
         Respuesta: 'false',
         Detalle: `Cannot ${ req.method } to this endpoint`,
-        Registro:{},
-        "codigo-error": 405
+        Registro: {}
     };
 
     logger_variable.error(`Intento de método ${ req.method } a la url: ${ req.baseUrl + req.url }`);
